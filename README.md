@@ -345,6 +345,138 @@ clock skew between two points to be 0, at every level each node should be drivin
 If it propagates, setup & hold time issues occur.
 
 
+Also, for a certain time, some are inactive
+
+![image](https://user-images.githubusercontent.com/127503584/225985349-f7e55462-70e4-4298-8359-c6f56be11f49.png)
+
+# Lab run showing slew
+
+![image](https://user-images.githubusercontent.com/127503584/225985391-5781fd99-ee87-474d-aa3e-2245c2cdeb89.png)
+Max slack -> tns
+Wns -> addition of all
+
+Delay vs area can be used to strike a balance
+
+Details for this design:
+Chip area for module '\picorv32a': 147712.918400
+Tns -711.59
+Wns -23.89
+
+# Slack violation
+![image](https://user-images.githubusercontent.com/127503584/225985514-3275ec65-09b9-4b53-9398-e50e1a358f55.png)
+
+With the help of various changes such as SYNTH_STRATEGY, SYNTH_BUFFERING, SYNTH_SIZING, SYNTH_MAX_FANOUT etc, we can optimize the slew.
+Further, we can replace high slew instances with better ones to finally reduce slew to the least number possible.
+Area could increase but we will get a lower slew at this cost.
+
+
+![image](https://user-images.githubusercontent.com/127503584/225985756-75556cac-91bd-4c0b-8a3d-dc5b4c81c7d8.png)
+![image](https://user-images.githubusercontent.com/127503584/225985778-cc4c2da8-4553-4345-a425-5e3c46fab4cc.png)
+
+Optimization 1 with area mode
+
+![image](https://user-images.githubusercontent.com/127503584/225986223-d94a24e1-67d3-44df-bc62-3ade79be84e8.png)
+
+Final optimized slew
+
+![image](https://user-images.githubusercontent.com/127503584/225986252-4ec17d12-d93b-46d7-881d-4c04fd38233f.png)
+
+# Merged lef showing the macro
+
+![image](https://user-images.githubusercontent.com/127503584/225986436-609e6a0f-2ed8-48e5-8055-c8da3c9d3cc5.png)
+
+We run floorplan and placement now.
+
+# Layout after placement showing the expansion of one of the inv cells
+
+![image](https://user-images.githubusercontent.com/127503584/225986540-8c9e3adb-c461-4e12-815c-02e6479d9d67.png)
+![image](https://user-images.githubusercontent.com/127503584/225986551-01ba57ac-8761-4096-9ff2-54590e3239b6.png)
+
+# Setup and Hold time analysis
+
+![image](https://user-images.githubusercontent.com/127503584/225986707-4ace299e-6746-4621-a658-1d7762adfdfa.png)
+
+Combination delay theta < time period for proper working.
+
+Further, some time x is taken in for setup and only T-x is available which is setup time.
+
+![image](https://user-images.githubusercontent.com/127503584/225986872-e97ef46f-c237-414d-b9a6-485a3d8d3ce7.png)
+
+Realistically, clock edge cannot be a square wave and will not arrive at t=0 as the inherent PLL generation circuit adds some delay.
+This causes our time to reduce further.
+
+Adding all the variables, we arrive at:
+
+![image](https://user-images.githubusercontent.com/127503584/225987051-aeec8c23-eaa1-4d96-ae37-c61c895aca8c.png)
+
+Timing paths are identified with this equation.
+
+![image](https://user-images.githubusercontent.com/127503584/225987073-a091fe38-ef01-4f36-a074-84b2bf88373b.png)
+
+# Running CTS
+
+The config file is manually created as below:
+
+![image](https://user-images.githubusercontent.com/127503584/225987101-f1bc0818-f436-4b76-87c4-e268e433846d.png)
+
+Looking at the inv cell pins and info:
+
+![image](https://user-images.githubusercontent.com/127503584/225987224-78b20100-87b0-46c0-bf4d-e020e3717dff.png)
+
+# Creating the pre_sta.conf in the OpenLane dir
+
+![image](https://user-images.githubusercontent.com/127503584/225987286-eb50611d-0852-43e9-af8c-2f65cb4847df.png)
+
+# Run CTS step
+
+![image](https://user-images.githubusercontent.com/127503584/225987348-472890b5-4f9e-40ea-9b1e-5922b63f1ef0.png)
+
+# DEF file generated after CTS
+
+![image](https://user-images.githubusercontent.com/127503584/225987414-a28c1fa8-1f69-4db6-8c1c-c750fb61eb78.png)
+
+Internal working of run_cts and function calls are described in detail in the lecture which helps us understand the real flow.
+
+# Verifying CTS results
+
+With the help of the variables, we can verify the CTS results.
+
+![image](https://user-images.githubusercontent.com/127503584/225987600-7d548eca-706e-4e22-b2fc-92882c56b0ea.png)
+
+# CTS_MAX_CAP example
+
+![image](https://user-images.githubusercontent.com/127503584/225987671-8670e432-6836-4006-ada4-1271b5d3ed85.png)
+
+This is the same as max capacitance in the *typical.lib
+
+![image](https://user-images.githubusercontent.com/127503584/225987713-316fa295-d1d1-4a89-9913-cac0b162e24b.png)
+
+
+# Realistic clocks add delays
+
+![image](https://user-images.githubusercontent.com/127503584/225987759-1e1cb3ce-69d3-4c19-a8ee-fc2c94260ef4.png)
+
+![image](https://user-images.githubusercontent.com/127503584/225987808-430ab37c-ecf6-408c-b28f-ddd743017417.png)
+
+
+Hold time realistic delay
+
+![image](https://user-images.githubusercontent.com/127503584/225987848-77cc318f-31c0-41ad-921c-803fd6f04278.png)
+
+![image](https://user-images.githubusercontent.com/127503584/225987862-3655b7a9-d952-4536-adc9-56bdb5f3d0dc.png)
+
+#Final equation showing all the parameters controlling the realistic hold time
+
+![image](https://user-images.githubusercontent.com/127503584/225987872-f2643fba-4617-433f-8bd7-4b86aa1a0e66.png)
+
+# Analysing it in the design
+
+![image](https://user-images.githubusercontent.com/127503584/225987896-6b631fb3-2535-45fd-be23-3fd93657beb0.png)
+
+
+
+
+
 
 
 
