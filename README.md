@@ -474,13 +474,64 @@ Hold time realistic delay
 ![image](https://user-images.githubusercontent.com/127503584/225987896-6b631fb3-2535-45fd-be23-3fd93657beb0.png)
 
 
+# Reading the merged lef
+
+![image](https://user-images.githubusercontent.com/127503584/225989641-8b24cdbc-32bb-46ec-92c0-b9198d5ecfcd.png)
+
+# Reading the cts generated def
+
+![image](https://user-images.githubusercontent.com/127503584/225990194-7b6ae2de-2c1b-4760-82c7-7c42d0aee508.png)
+
+# Writing the DB
+![image](https://user-images.githubusercontent.com/127503584/225990475-262dfe04-59dc-41eb-89cb-cc06088598ae.png)
+
+![image](https://user-images.githubusercontent.com/127503584/225990444-7ec6f9ec-a92d-4a88-981b-4e63a29eb48c.png)
+
+# Reading verilog *.v file
+
+![image](https://user-images.githubusercontent.com/127503584/225990944-c5286edb-2c95-4c60-bbd9-aa97dc3b467a.png)
+
+# Reading min and max lib files
+
+ ![image](https://user-images.githubusercontent.com/127503584/225991640-f4a2988a-954e-45a2-9367-55efecc6a699.png)
 
 
 
+# Reading SDC
+
+![image](https://user-images.githubusercontent.com/127503584/225992158-8e5a6340-eb78-4130-b588-1e55e948dcd3.png)
+![image](https://user-images.githubusercontent.com/127503584/225992190-ade5b3ef-5484-4916-9c49-549cdf9f0804.png)
 
 
+# Huge violation in realistic clock analysis
+![image](https://user-images.githubusercontent.com/127503584/225992676-12e8176f-edc3-4d60-b803-612f2c4a1874.png)
 
 
+![image](https://user-images.githubusercontent.com/127503584/225992579-aac306e0-28d0-428c-8d3a-277fb7f5ae9c.png)
+
+TriTon is built only for one corner but we're analysing on MIN and MAX
+
+Exit and re-enter openroad
+
+![image](https://user-images.githubusercontent.com/127503584/225992959-1061fe95-0c87-4576-a7b1-a5a8de690f24.png)
+
+Re-read all the files
+
+![image](https://user-images.githubusercontent.com/127503584/225993971-25fd5970-4855-4ba8-bc4a-d27f9b58afcd.png)
+![image](https://user-images.githubusercontent.com/127503584/225994396-0e7073ae-ec3e-4763-8e09-69c1a7366102.png)
+
+# Now report again with the modified design for TYPICAL corner only to get the real picture
+
+![image](https://user-images.githubusercontent.com/127503584/225994700-e7027bc7-d6ec-471a-bf35-3763ad9a9fb3.png)
+
+# HOLD
+![image](https://user-images.githubusercontent.com/127503584/225994866-9a6e9e0a-5312-4b90-94c5-5070c9a728a5.png)
+
+# Assignment
+
+Current clk buffers
+
+![image](https://user-images.githubusercontent.com/127503584/225996488-d408646b-7c8a-4fe9-b770-127e98e96f15.png)
 
 
 
