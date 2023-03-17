@@ -1,2 +1,362 @@
 # VSD_IAT
-(Yet to be filled, I have it all in a word doc capturing it here)
+
+Chip/Package- Die manufactured on Si wafer
+
+Foundry- Where the manufacturing of the chip takes place
+Communication with foundries happen through a set of files which are specific to each foundry
+
+# Instruction Set Architecture
+
+The C++ program written is to be converted to assembly language program. The machine only understand bits 1s and 0s.
+Application software such as Microsoft Word/Excel execute top level code which is finally understood in binary.
+
+C++ code -> Compiler -> Instructions (Hardware dependant)
+
+# SOC Design using OpenLane
+
+Designing ASICs need 3 major elements
+
+1) RTL IPs
+2) EDA Tools
+3) PDK Data
+
+Only when we are able to make all these open source will we be able to make ASIC design completely open source.
+
+# RTL to GDSII Flow
+
+![image](https://user-images.githubusercontent.com/127503584/225972365-180f632e-c7d0-4323-8fca-dfc4a9d2d1a4.png)
+
+These steps are followed to convert the RTL level design to a GDSII layout.
+
+# OpenLane Tool usage
+
+On docker, we invoke OpenLane and run the flow as below:
+
+![image](https://user-images.githubusercontent.com/127503584/225983950-8ea0fe3b-63a3-4dc4-924f-eb210ee9cf4a.png)
+
+
+% package require openlane 0.9
+% prep -design picorv32a
+% run_synthesis #remove the *.v file each time when re-run
+% run_floorplan
+% run_placement
+% run_cts
+% run_routing
+% run_magic
+% run_magic_spice_export
+% run_magic_drc
+% run_netgen
+% run_magic_antenna_check
+
+# Synthesis
+
+RTL is converted to gate level netlist
+
+# Floorplan
+
+Width and height of the core and die are important parameters in floorplan.
+
+Utilization factor= Area occupied by netlist / Core area
+Aspect Ratio= Height / Width
+
+Preplaced cells- We can implement a cell by taking it out of the main netlist. We have connectivity info between the blocks.
+These are then black boxed and included. Their design is invisible at the top level serving IP purpose too.
+
+These are called pre-placed as they're placed before placement&routing step. They need to be implemented only once and this is useful when it's instantiated multiple times.
+
+Further, these pre-placed cells need to be surrounded by decap cells or decoupling caps.
+
+When a piece of circuit switches from 0 to 1, the cap charges and VDD should supply this. These decoupling caps reduce the burden on the main source by charging and supplying it to the circuit when in need.
+They decouple the circuit from the main circuitry and hence the name DECAPs
+
+LAB- FP_CORE_UTIL, FP_IO_VMETAL, FP_IO_HMETAL can be used to control the floorplan.
+![image](https://user-images.githubusercontent.com/127503584/225975003-52d7d29c-07f3-4c17-b577-4fa6e6a47bca.png)
+
+# Power Planning
+
+We need to plan the P/G grid to supply power to all the cells in the design. Power mesh consists of parallel VDD and VSS lines supplying power throughout the design to help cells tap from the closest line.
+
+
+# Placement
+
+Place the instances close to the ports to avoid routing and also optimize the design with abuttment to reduce delay to the mmost minimum possible.
+
+MAGIC (Post global placement)
+ 
+![image](https://user-images.githubusercontent.com/127503584/225981082-6ef37ab2-da4b-4c73-bee0-e203fa721c4b.png)
+![image](https://user-images.githubusercontent.com/127503584/225981109-58508b08-87b6-4bb2-94a8-c187de4bc9dc.png)
+Here FP_IO_MODE 1 was used and hence the pins are spaced equi-distant.
+We can re-run at any point by resetting a var, like 
+set ::env(FP_IO_MODE) 2
+and re-run floorplan and it’s reflected.
+
+
+# Cell design flow
+
+Standard cells such as FF, buffers are designed and re-used in the design as the basic building blocks.
+Cell design flow happens in 3 steps:
+1) Inputs
+2) Design Steps
+3) Outputs
+
+1) Inputs- PDKs, DRC, LVS rules, SPICE models, lib etc
+
+Rules define parameters such as the poly width, extension over active region, poly to active spacing etc.
+SPICE models give the Vt equations etc and have foundry specific parameters.
+Lib and user defined specs include the supply voltage, drive strengt, metal layers etc
+
+2) Design Steps- Based on the inputs, designer designs the cell. This can be classified into 3 major steps:
+
+i) Circuit design- Implement the functionality and model
+ii) Layout design- Function implementation through p&nmos, grapth (Euler's diagram), convert to layout- This stage outputs the *gdsii file.
+ii) Characterization- Timing, noise, power characterization
+
+Characterization has 8 major steps-
+
+I) Read model file from foundry
+II) Read extracted spice netlist
+III) Recognise the behaviour of the buffer
+IV) Read subcircuit of the buffer
+V) Attach power sources
+VI) Apply stimulus
+VII) Provide output load caps
+VIII) Provide necessary .tran/ transition commands
+
+3) Outputs- We get lib,gdsii output and also timing etc characterized outputs
+
+# Timing characterization
+![image](https://user-images.githubusercontent.com/127503584/225977434-78963553-ce9c-40a5-a4bf-0bbf6ebc209d.png)
+Multiple parameters are used to characterize the timing of the inverter as shown above.
+
+Propagation delay= time(out_*_threshold)-time(input_*_threshold)
+Slew= time(slew_high_rise_threshold)-time(slew_low_rise_threshold)
+
+# Spice Deck
+
+![MicrosoftTeams-image (28)](https://user-images.githubusercontent.com/127503584/225978895-35ddae28-5128-48fe-8e7c-0c2e3d52c933.png)
+As described above, we define the spice deck of the model.
+
+# Running spice
+
+![MicrosoftTeams-image (29)](https://user-images.githubusercontent.com/127503584/225979025-eb77b68a-d4db-4c45-ad75-5aa73be1c76e.png)
+
+# Static behaviour evalutaion of the CMOS Inverter
+
+Switching Threshold (Vm)
+
+![MicrosoftTeams-image (30)](https://user-images.githubusercontent.com/127503584/225979427-e01cb197-4166-43e5-b0c0-ea86b00b7a02.png)
+
+As described in the note above, we calculate the point where Vin=Vout with a 45 degree line to get the switching threshold.
+
+# 16 Mask CMOS process
+
+Mask is an opaque plate which blocks the UV light to react with certain areas of photo-resist.
+
+![image](https://user-images.githubusercontent.com/127503584/225979974-a85886ce-9a98-4d52-855a-8639c3f21fe2.png)
+![image](https://user-images.githubusercontent.com/127503584/225980022-7b9a2c34-da44-46ad-a33a-3b7e59bf4222.png)
+Active regions- isolated from each other using SiO2 grown with LOCOS (Local Oxidation of Silicon).
+Mask2 and Mask3 will be used to create wells (nwell for pmos and pwell for nmos) :
+
+![image](https://user-images.githubusercontent.com/127503584/225980218-3f512e5e-886d-4336-9345-75bb48c7db0f.png)
+
+![image](https://user-images.githubusercontent.com/127503584/225980234-e9c14b94-d581-469c-ac29-2d108df765ad.png)
+
+Once we have the nwell and pwell created, we place it in a high temperature furnace and the wells are diffused into the substrate
+
+![image](https://user-images.githubusercontent.com/127503584/225980380-685f95a5-cce0-4512-a070-c57f78017fb9.png)
+Mask4 helps block nwell region and dope pwell with p-type impurity i.e. boron
+
+![image](https://user-images.githubusercontent.com/127503584/225980523-a2ade3fb-cb5a-4450-bbcc-62d4d624fe50.png)
+![image](https://user-images.githubusercontent.com/127503584/225980546-d13af2a8-29f6-4d6f-8610-f59fad86cbed.png)
+
+Similarly, we dope nwell with n-type impurity i.e. Arsenic and use mask 5 for the same.
+
+The original oxide is etched using HF acid and then re-grown to give high quality oxide.
+
+![image](https://user-images.githubusercontent.com/127503584/225980774-9e813991-481b-4575-a365-e53edd7a2b0c.png)
+
+LDD Formation
+![image](https://user-images.githubusercontent.com/127503584/225981387-c142567f-357b-4e92-81ed-35f4477ad5b8.png)
+
+
+![image](https://user-images.githubusercontent.com/127503584/225981452-4379ebfe-6541-490e-bd62-695dacb05a54.png)
+![image](https://user-images.githubusercontent.com/127503584/225981542-c1b65cf1-9423-409f-b585-e3ca0445776a.png)
+Higher level layer formation
+![image](https://user-images.githubusercontent.com/127503584/225981614-b291309b-c19f-4efb-aa7c-d128b4f308f6.png)
+
+CMOS
+![image](https://user-images.githubusercontent.com/127503584/225981722-4ed230dd-471e-49bf-a460-fb703e26a450.png)
+
+# Standard cell design
+
+After the git is cloned, we can view it in magic with tech and mag file.
+
+![image](https://user-images.githubusercontent.com/127503584/225981890-75e42550-0035-4142-a916-82e073e3b170.png)
+
+# Running spice
+
+![image](https://user-images.githubusercontent.com/127503584/225981947-b48ab8c2-7743-402b-a6b4-d27bd5e9033b.png)
+
+Model definition
+![image](https://user-images.githubusercontent.com/127503584/225981987-2d8d17db-0982-431c-8c59-9b7c8e2c1320.png)
+
+
+Spice file 
+
+![image](https://user-images.githubusercontent.com/127503584/225982048-701330fc-2c47-4a18-82fe-43525dd64416.png)
+
+ngspice run
+
+![image](https://user-images.githubusercontent.com/127503584/225982074-44ef62b5-e174-48c7-b898-958a31a6dd89.png)
+
+Output waveform y with time and input
+
+![image](https://user-images.githubusercontent.com/127503584/225982127-f8110bfb-9810-443a-9296-a2c6084104f6.png)
+
+We can click and measure the slew etc
+
+![image](https://user-images.githubusercontent.com/127503584/225982249-8d803bcb-0c7f-465e-9768-784d222f6f68.png)
+
+
+# Magic Lef dump
+
+
+Design
+![image](https://user-images.githubusercontent.com/127503584/225982303-311e0044-12a9-4236-8148-04a67e3e588b.png)
+
+For any region, we can do ":drc why" and it’ll give the info.
+
+![image](https://user-images.githubusercontent.com/127503584/225982489-b311509b-a802-482b-957f-33309b634a3d.png)
+
+Controls- Zoom in (z), zoom out (Shift+z), Mouse right click helps us select an area
+
+:cif see VIA2 shows the via2 on met3contact
+
+![image](https://user-images.githubusercontent.com/127503584/225982522-fe27b187-c5ad-4475-b803-3258711b9887.png)
+
+
+# Poly9 rule description
+
+![image](https://user-images.githubusercontent.com/127503584/225982602-adc1106c-de7d-47a3-a3e3-ebf108625874.png)
+
+Poly 9 should be showing an error but we see nothing, this has to be fixed.
+
+# Tech file rule addition
+
+![image](https://user-images.githubusercontent.com/127503584/225982712-bfb04ad4-a610-48a7-9b76-cbf8c8aa30d2.png)
+
+![image](https://user-images.githubusercontent.com/127503584/225982730-57b5c107-c0d9-4fca-bff2-86ceb498f0fa.png)
+
+Now we see the drc error as below:
+
+![image](https://user-images.githubusercontent.com/127503584/225982773-d303425c-b56c-4ec2-8cb1-630b9e718e3a.png)
+
+![image](https://user-images.githubusercontent.com/127503584/225982799-1326ed6d-6887-453c-9376-794f9756916f.png)
+
+# nwell rules 5 and 6
+
+![image](https://user-images.githubusercontent.com/127503584/225982848-25f30258-e91f-4e82-bfdc-25e984632c4d.png)
+
+Nwell6 showing drc issues
+
+![image](https://user-images.githubusercontent.com/127503584/225982898-6528126d-adbe-4777-bc49-0423d2063ecd.png)
+
+![image](https://user-images.githubusercontent.com/127503584/225982917-41e13397-67aa-4235-b19b-48c7cb0c1ae4.png)
+
+![image](https://user-images.githubusercontent.com/127503584/225982932-9dafb8d5-bed4-424a-a93d-596c34eee94a.png)
+
+temp layer-> cirfmaxwidth describes it
+![image](https://user-images.githubusercontent.com/127503584/225983340-46a56675-b4eb-422f-8651-15e83164144a.png)
+
+Temp is just a temp layer to get the final outout building block for other layers
+
+![image](https://user-images.githubusercontent.com/127503584/225983054-f3bea32a-2cfa-4cc0-b3c7-2bdc4adb10a7.png)
+
+# Two rules to be checked
+
+Least possible nwell outside surround and inside overlap rules
+And not-nwell verifies finally if any rule is violated.
+
+![image](https://user-images.githubusercontent.com/127503584/225983360-812fbfe8-1a3a-4d7e-9bd4-f3b0e62a86d8.png)
+
+Ncontact should be present for all nwells
+Expand area of any nwell underneath
+Remove all taps whatever left is error
+Set of all nwells- set of all nwells with tap = Erroring ones remain
+
+![image](https://user-images.githubusercontent.com/127503584/225983447-004911f3-408c-4e2c-8f98-34670960926a.png)
+![image](https://user-images.githubusercontent.com/127503584/225983462-5bafd54d-9f27-4a61-a3ea-548c55f5d245.png)
+
+RESOLVED
+
+![image](https://user-images.githubusercontent.com/127503584/225983477-59895fb4-22a4-4453-a92f-cfe0506666b5.png)
+
+2 rules to be checked
+
+1) I/p and o/p ports must lie on intersection of hor and ver tracks.
+2) Width of std cell should be multiples of track pitch and height multiple of ver pitch
+
+![image](https://user-images.githubusercontent.com/127503584/225983738-5c72867b-d6f6-4614-a351-99e22691913e.png)
+
+# Defining ports
+
+![image](https://user-images.githubusercontent.com/127503584/225983805-f828378a-33a4-42b3-8183-7a9b1270a6d1.png)
+![image](https://user-images.githubusercontent.com/127503584/225983826-5cd03f55-d874-4859-83ea-b3c6ff49a3b2.png)
+
+# Writing LEF
+
+![image](https://user-images.githubusercontent.com/127503584/225983864-b3ce6ce7-20c0-473e-b367-99db650a1662.png)
+
+# LEF file showing the pins and the ports
+
+![image](https://user-images.githubusercontent.com/127503584/225983916-c1ecdc52-bde5-4a4a-b585-5f9002289682.png)
+
+
+# Specifying the extra lefs and libs to include our design in the main design picorv32a
+
+![image](https://user-images.githubusercontent.com/127503584/225984228-88cffd7f-1e0c-4720-ba6e-f7ce8acda33e.png)
+![image](https://user-images.githubusercontent.com/127503584/225984248-e5bcd122-6e2c-44d6-a2f1-a5c873f1f253.png)
+ 
+std_inv component seen
+
+![image](https://user-images.githubusercontent.com/127503584/225984268-b7ff11f3-cd49-4ff0-bc32-844a9495131b.png)
+
+# Getting the slew
+
+![image](https://user-images.githubusercontent.com/127503584/225984275-1f658680-60de-4f5c-89ba-c671dde1b16a.png)
+
+# Clock Tree Synthesis
+
+![image](https://user-images.githubusercontent.com/127503584/225984460-c0397f8f-93b5-440d-a21c-1451be47052b.png)
+![image](https://user-images.githubusercontent.com/127503584/225984489-e1490443-ab0f-4019-b06f-ace0d29439d9.png)
+
+![image](https://user-images.githubusercontent.com/127503584/225984524-2cf2d048-2901-4a77-aaca-3759837c6bb1.png)
+# Delay table
+Buffer taken out and input transition varied with output load to get the delay table.
+Delay characterized and table contains input slew vs outputload.
+Different sizes (essentially W/L of mos) causes it to be a diff type of cell and we need to build timing delay table separately.
+
+The reason is that Varying size -> varying res -> varying rc constant causing different delay.
+Further, we can also extrapolate with delay table for missing values.
+
+If i/p slew, size and output load are same, then delay same.
+For 2 or more buffer levels,
+clock skew between two points to be 0, at every level each node should be driving the same load & identical buffers should be present at the same level.
+If it propagates, setup & hold time issues occur.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
