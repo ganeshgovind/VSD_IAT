@@ -349,6 +349,19 @@ Also, for a certain time, some are inactive
 
 ![image](https://user-images.githubusercontent.com/127503584/225985349-f7e55462-70e4-4298-8359-c6f56be11f49.png)
 
+
+# H-Tree Algorithm
+
+In the H-tree algo, clock routing is done like letter H.It's based on the equalization of the wire length. In H tree-based approach, the distance from the clock source points to each of the clock sink points are always the same.
+In H tree, tool tries to minimize skew by making interconnection to subunits equal in length.
+
+This type of algorithm used for the scenario where all the clock terminal points are arranged in a symmetrical manner such as in the gate array arranged in the FPGAs
+
+Advantages: Zero skew due to the symmetry of the H tree.
+
+Disadvantages: Blockages can spoil the symmetry of the H tree.
+Non-uniform sink location and varying sink capacitance can lead to commplex H-tree designs.
+
 # Lab run showing slew
 
 ![image](https://user-images.githubusercontent.com/127503584/225985391-5781fd99-ee87-474d-aa3e-2245c2cdeb89.png)
