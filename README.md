@@ -38,16 +38,27 @@ On docker, we invoke OpenLane and run the flow as below:
 % package require openlane 0.9
 
 % prep -design picorv32a
+
 % run_synthesis #remove the *.v file each time when re-run
+
 % run_floorplan
+
 % run_placement
+
 % run_cts
+
 % run_routing
+
 % run_magic
+
 % run_magic_spice_export
+
 % run_magic_drc
+
 % run_netgen
+
 % run_magic_antenna_check
+
 
 # Synthesis
 
@@ -109,21 +120,30 @@ Lib and user defined specs include the supply voltage, drive strengt, metal laye
 2) Design Steps- Based on the inputs, designer designs the cell. This can be classified into 3 major steps:
 
 i) Circuit design- Implement the functionality and model
+
 ii) Layout design- Function implementation through p&nmos, grapth (Euler's diagram), convert to layout- This stage outputs the *gdsii file.
+
 ii) Characterization- Timing, noise, power characterization
 
 Characterization has 8 major steps-
 
 I) Read model file from foundry
+
 II) Read extracted spice netlist
+
 III) Recognise the behaviour of the buffer
+
 IV) Read subcircuit of the buffer
+
 V) Attach power sources
+
 VI) Apply stimulus
+
 VII) Provide output load caps
+
 VIII) Provide necessary .tran/ transition commands
 
-3) Outputs- We get lib,gdsii output and also timing etc characterized outputs
+3) Outputs- We get lib, gdsii output and also timing etc characterized outputs
 
 # Timing characterization
 ![image](https://user-images.githubusercontent.com/127503584/225977434-78963553-ce9c-40a5-a4bf-0bbf6ebc209d.png)
@@ -670,7 +690,7 @@ Collection is called Access point cluster
 
 ![image](https://user-images.githubusercontent.com/127503584/226325370-fe32918f-3d32-4fbb-b2d8-ffb9af30116b.png)
 
-Minimum spanning tree between two APCs
+Minimum spanning tree between two APCs.
 
 
 
