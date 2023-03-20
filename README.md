@@ -540,11 +540,137 @@ Re-read all the files
 # HOLD
 ![image](https://user-images.githubusercontent.com/127503584/225994866-9a6e9e0a-5312-4b90-94c5-5070c9a728a5.png)
 
-# Assignment
-
-Current clk buffers
+Current clk buffers are altered to get better slack values
 
 ![image](https://user-images.githubusercontent.com/127503584/225996488-d408646b-7c8a-4fe9-b770-127e98e96f15.png)
+
+# Routing
+
+Physical connection with the best possible optimised path using an algorithm.
+
+![image](https://user-images.githubusercontent.com/127503584/226325773-d0de97bf-66d5-4944-bb74-f75440e01b76.png)
+Example: FF1 and Din1 have to be connected.
+
+# Maze Routing (Lee's Algo)
+
+Algorithm based on BFS.
+Algo:
+1) Labels all the vertical and horizontal adjacent grid boxes as 1 next to source. Further, adjacent to 1, we label 2 and so on.
+2) When there is a blockage, grid box cannot be used.
+3) We can take multiple routes as below:
+   ![image](https://user-images.githubusercontent.com/127503584/226327500-38414dc6-60bc-4f1b-b4a7-22e3d97fdc21.png)
+
+Any route with single bends are more preferred- L shaped routing is the most ideal.
+
+Limitations: It has to store all the routes and also consumes a lot of time
+
+# DRC
+
+When we build and route wires, there are certain rules to be followed- Design rules.
+Ex: Minimum wire width, wire spacing, wire pitch.
+Need for the rules- Optical wavelength of light decides the min wire width.
+
+If these are violated, we see DRC violations which need to be resolved to make the design DRC clean.
+
+We can add changes and verify if it's DRC clean.
+
+![image](https://user-images.githubusercontent.com/127503584/226328332-8d74ec56-2d42-4fcf-88cc-0fe10f085d7a.png)
+
+
+# PDN
+
+Power delivery network is built for the design:
+
+![image](https://user-images.githubusercontent.com/127503584/226329147-d55ca988-dfac-4d1c-9ca3-2812b5b159a5.png)
+
+From the ring, we will create pads and further create rails. These rails will have straps to provide vertical and horizontal straps to provide power to every cell.
+
+
+
+# Routing
+
+Routing is divided into: Fast route and detailed route
+
+Global route is done by fast route and detailed route is done by TriTon in OpenLane.
+
+![image](https://user-images.githubusercontent.com/127503584/226328736-e85f36c5-b247-4d13-8220-56105989f558.png)
+
+Global route creates the routing guides for each of the nets while detailed route uses an algorithm to find the best possible connectivity and performs the routing.
+
+
+# TriTon Route
+
+TriTon route performs initial detailed routing. It honors the pre-processed route guides obtained after the fast route and attempts to route within the route guides.
+It works on proposed MILP-based panel routing scheme with intra-layer parallel and inter-layer sequential routing framework.
+
+M1 and M2- Via routing happens through M2.
+
+# Pre-processed route guides
+
+Requirements- Should have unit width and be in the preferred direction.
+
+# Steps
+
+![image](https://user-images.githubusercontent.com/127503584/226323486-76032c68-0411-457e-9eee-b91ca95e6189.png)
+
+
+1) Initial route guides
+2) Splitting
+3) Merging
+4) Bridging
+5) Pre-processed guides are outputted
+
+A non-preferred route guide is converted to preferred diretion for that metal M1/M2 etc.
+
+# Inter-guide connectivity
+
+Two guides are connected if:
+
+1) They are on the same metal layer with touching edges
+OR
+2) They are on the neighbouring metal layers with a non-zero vertically overlapped area.
+
+Each of the unconnected terminals should have its pin shape overlapped by a route guide.
+
+Common non-zero is the purple area below:
+
+![image](https://user-images.githubusercontent.com/127503584/226324302-982a38f8-e6ce-4bd4-b862-40b27703da6c.png)
+
+Black dots are pins of std cells which needs to be overlapped by a route guide:
+
+![image](https://user-images.githubusercontent.com/127503584/226324445-b09dd4dc-3c18-4719-b247-6cee1f067dc8.png)
+
+
+# Inter-layer and intra layer routing
+
+![image](https://user-images.githubusercontent.com/127503584/226324554-eead4a7e-faef-4e7c-997f-db8476a01f5a.png)
+
+M2 is assumed to be vertical. Routing guide is assigned to panel.
+Routing will happen in all even-indexed and then all odd-indexed -> Inter layer
+Within the layer is parallel -> Intra layer
+
+M3 will begin after M1 and M2 -> Sequential
+
+Triton Route needs below inputs:
+
+![image](https://user-images.githubusercontent.com/127503584/226324919-dd768eee-7864-4b5d-8944-74d70b46974a.png)
+
+
+# Handling connectivity
+
+![image](https://user-images.githubusercontent.com/127503584/226325034-fe06b207-d05c-4fb1-9a60-d446b90d08d0.png)
+
+Horizontal dashes are M2
+Vertical dashes are M3
+15 intersection points-> Possible connecting points are Access points
+Collection is called Access point cluster
+
+# Routing algorithm
+
+![image](https://user-images.githubusercontent.com/127503584/226325370-fe32918f-3d32-4fbb-b2d8-ffb9af30116b.png)
+
+Minimum spanning tree between two APCs
+
 
 
 
