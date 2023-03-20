@@ -561,7 +561,8 @@ Re-read all the files
 
 ![image](https://user-images.githubusercontent.com/127503584/225994700-e7027bc7-d6ec-471a-bf35-3763ad9a9fb3.png)
 
-# HOLD
+# HOLD time
+
 ![image](https://user-images.githubusercontent.com/127503584/225994866-9a6e9e0a-5312-4b90-94c5-5070c9a728a5.png)
 
 Current clk buffers are altered to get better slack values
