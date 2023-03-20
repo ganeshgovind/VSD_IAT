@@ -36,6 +36,7 @@ On docker, we invoke OpenLane and run the flow as below:
 
 
 % package require openlane 0.9
+
 % prep -design picorv32a
 % run_synthesis #remove the *.v file each time when re-run
 % run_floorplan
