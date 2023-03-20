@@ -2,7 +2,7 @@
 
 Chip/Package- Die manufactured on Si wafer
 
-Foundry- Where the manufacturing of the chip takes place
+Foundry- Where the manufacturing of the chip takes place.
 Communication with foundries happen through a set of files which are specific to each foundry
 
 # Instruction Set Architecture
