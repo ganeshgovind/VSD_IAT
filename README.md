@@ -219,19 +219,20 @@ After the git is cloned, we can view it in magic with tech and mag file.
 
 ![image](https://user-images.githubusercontent.com/127503584/225981947-b48ab8c2-7743-402b-a6b4-d27bd5e9033b.png)
 
-Model definition
+# Model definition
+
 ![image](https://user-images.githubusercontent.com/127503584/225981987-2d8d17db-0982-431c-8c59-9b7c8e2c1320.png)
 
 
-Spice file 
+# Spice file 
 
 ![image](https://user-images.githubusercontent.com/127503584/225982048-701330fc-2c47-4a18-82fe-43525dd64416.png)
 
-ngspice run
+# ngspice run
 
 ![image](https://user-images.githubusercontent.com/127503584/225982074-44ef62b5-e174-48c7-b898-958a31a6dd89.png)
 
-Output waveform y with time and input
+# Output waveform y with time and input
 
 ![image](https://user-images.githubusercontent.com/127503584/225982127-f8110bfb-9810-443a-9296-a2c6084104f6.png)
 
@@ -243,7 +244,8 @@ We can click and measure the slew etc
 # Magic Lef dump
 
 
-Design
+# Design
+
 ![image](https://user-images.githubusercontent.com/127503584/225982303-311e0044-12a9-4236-8148-04a67e3e588b.png)
 
 For any region, we can do ":drc why" and it’ll give the info.
@@ -309,7 +311,7 @@ Set of all nwells- set of all nwells with tap = Erroring ones remain
 ![image](https://user-images.githubusercontent.com/127503584/225983447-004911f3-408c-4e2c-8f98-34670960926a.png)
 ![image](https://user-images.githubusercontent.com/127503584/225983462-5bafd54d-9f27-4a61-a3ea-548c55f5d245.png)
 
-RESOLVED
+# RESOLVED
 
 ![image](https://user-images.githubusercontent.com/127503584/225983477-59895fb4-22a4-4453-a92f-cfe0506666b5.png)
 
